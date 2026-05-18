@@ -19,7 +19,15 @@
     #reader {
       width: 100%;
       max-width: 400px;
-      margin: auto;
+      margin: 20px auto;
+    }
+
+    button {
+      padding: 14px 24px;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
     }
 
     .success {
@@ -33,11 +41,18 @@
       font-size: 24px;
       margin-top: 20px;
     }
+
+    .info {
+      color: #ccc;
+      margin-top: 15px;
+    }
   </style>
 </head>
 <body>
 
 <h1>Scanner Accessi</h1>
+
+<button onclick="startScanner()">Avvia fotocamera</button>
 
 <div id="reader"></div>
 
@@ -47,25 +62,29 @@
 const validPasses = [
   { code: "OT1", name: "Emanuela Carboni", seat: "Fila A - Posto 12" },
   { code: "VDM2", name: "Sara Carvone", seat: "Fila B - Posto 08" },
-  { code: "MG3", name: "Gioele Deidda", seat: "Fila C - Posto 21" }
-  { code: "LG4", name: "Giorgia Fiori", seat: "Fila C - Posto 21" }
-  { code: "DL5", name: "Daniel Ghiani", seat: "Fila C - Posto 21" }
-  { code: "IP6", name: "Anita Mandis", seat: "Fila C - Posto 21" }
-  { code: "SMC7", name: "Yuri Marsilio", seat: "Fila C - Posto 21" }
-  { code: "MR8", name: "Ivan Melis", seat: "Fila C - Posto 21" }
-  { code: "LB9", name: "Gabriele Migliorelli", seat: "Fila C - Posto 21" }
-  { code: "DA10", name: "Sophia Ortu", seat: "Fila C - Posto 21" }
-  { code: "HCB11", name: "Julia Pani", seat: "Fila C - Posto 21" }
-  { code: "UM12", name: "Zachary Pia", seat: "Fila C - Posto 21" }
-  { code: "GBG13", name: "Andrea Torsani", seat: "Fila C - Posto 21" }
+  { code: "MG3", name: "Gioele Deidda", seat: "Fila C - Posto 21" },
+  { code: "LG4", name: "Giorgia Fiori", seat: "Fila C - Posto 21" },
+  { code: "DL5", name: "Daniel Ghiani", seat: "Fila C - Posto 21" },
+  { code: "IP6", name: "Anita Mandis", seat: "Fila C - Posto 21" },
+  { code: "SMC7", name: "Yuri Marsilio", seat: "Fila C - Posto 21" },
+  { code: "MR8", name: "Ivan Melis", seat: "Fila C - Posto 21" },
+  { code: "LB9", name: "Gabriele Migliorelli", seat: "Fila C - Posto 21" },
+  { code: "DA10", name: "Sophia Ortu", seat: "Fila C - Posto 21" },
+  { code: "HCB11", name: "Julia Pani", seat: "Fila C - Posto 21" },
+  { code: "UM12", name: "Zachary Pia", seat: "Fila C - Posto 21" },
+  { code: "GBG13", name: "Andrea Torsani", seat: "Fila C - Posto 21" },
   { code: "FF14", name: "Eleonora Vacca", seat: "Fila C - Posto 21" }
 ];
+
+let html5QrCode;
 
 function onScanSuccess(decodedText) {
   const resultDiv = document.getElementById("result");
 
+  const scannedCode = decodedText.trim();
+
   const found = validPasses.find(
-    pass => pass.code === decodedText
+    pass => pass.code === scannedCode
   );
 
   if (found) {
@@ -80,26 +99,37 @@ function onScanSuccess(decodedText) {
   } else {
     resultDiv.innerHTML = `
       <div class="error">
-        ❌ ACCESSO NEGATO
+        ❌ ACCESSO NEGATO<br><br>
+        Codice letto: ${scannedCode}
       </div>
     `;
   }
 }
 
-const html5QrCode = new Html5Qrcode("reader");
+function startScanner() {
+  const resultDiv = document.getElementById("result");
 
-Html5Qrcode.getCameras().then(devices => {
-  if (devices && devices.length) {
-    html5QrCode.start(
-      { facingMode: "environment" },
-      {
-        fps: 10,
-        qrbox: 250
-      },
-      onScanSuccess
-    );
-  }
-});
+  resultDiv.innerHTML = `<div class="info">Avvio fotocamera...</div>`;
+
+  html5QrCode = new Html5Qrcode("reader");
+
+  html5QrCode.start(
+    { facingMode: "environment" },
+    {
+      fps: 10,
+      qrbox: 250
+    },
+    onScanSuccess
+  ).catch(err => {
+    resultDiv.innerHTML = `
+      <div class="error">
+        Errore apertura fotocamera.<br><br>
+        Controlla che il sito sia in HTTPS e aprilo da Safari.
+      </div>
+    `;
+    console.error(err);
+  });
+}
 </script>
 
 </body>

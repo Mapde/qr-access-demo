@@ -82,7 +82,6 @@ function onScanSuccess(decodedText) {
   const resultDiv = document.getElementById("result");
 
   const scannedCode = decodedText.trim();
-
   const found = validPasses.find(
     pass => pass.code === scannedCode
   );

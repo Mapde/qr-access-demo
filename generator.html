@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Generatore QR</title>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <style>
+    body{
+      font-family:Arial;
+      padding:40px;
+      text-align:center;
+    }
+
+    input{
+      padding:10px;
+      width:300px;
+      margin:10px;
+    }
+
+    button{
+      padding:10px 20px;
+    }
+
+    #qrcode{
+      margin-top:30px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Generatore QR</h1>
+
+<input type="text" id="name" placeholder="Nome">
+<input type="text" id="code" placeholder="Codice">
+
+<br>
+
+<button onclick="generateQR()">
+  Genera QR
+</button>
+
+<div id="qrcode"></div>
+
+<script>
+
+function generateQR(){
+
+  const name = document.getElementById("name").value;
+  const code = document.getElementById("code").value;
+
+  document.getElementById("qrcode").innerHTML = "";
+
+  new QRCode(document.getElementById("qrcode"), {
+    text: code,
+    width: 250,
+    height: 250
+  });
+}
+
+</script>
+
+</body>
+</html>

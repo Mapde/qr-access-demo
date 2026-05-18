@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scanner Accessi</title>
+
+  <script src="https://unpkg.com/html5-qrcode"></script>
+
+  <style>
+    body{
+      font-family: Arial;
+      background:#111;
+      color:white;
+      text-align:center;
+      padding:20px;
+    }
+
+    #reader{
+      width:100%;
+      max-width:400px;
+      margin:auto;
+    }
+
+    .success{
+      color:#00ff88;
+      font-size:24px;
+      margin-top:20px;
+    }
+
+    .error{
+      color:#ff4444;
+      font-size:24px;
+      margin-top:20px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Scanner Accessi</h1>
+
+<div id="reader"></div>
+
+<div id="result"></div>
+
+<script>
+
+const validPasses = [
+  { code: "ABC123", name: "Mario Rossi" },
+  { code: "DEF456", name: "Giulia Bianchi" },
+  { code: "GHI789", name: "Luca Verdi" }
+];
+
+function onScanSuccess(decodedText) {
+
+  const resultDiv = document.getElementById("result");
+
+  const found = validPasses.find(
+    pass => pass.code === decodedText
+  );
+
+  if(found){
+
+    resultDiv.innerHTML = `
+      <div class="success">
+        ✅ ACCESSO CONSENTITO<br><br>
+        ${found.name}
+      </div>
+    `;
+
+  } else {
+
+    resultDiv.innerHTML = `
+      <div class="error">
+        ❌ ACCESSO NEGATO
+      </div>
+    `;
+  }
+}
+
+const html5QrCode = new Html5Qrcode("reader");
+
+Html5Qrcode.getCameras().then(devices => {
+
+  if(devices && devices.length){
+
+    html5QrCode.start(
+      { facingMode: "environment" },
+      {
+        fps: 10,
+        qrbox: 250
+      },
+      onScanSuccess
+    );
+  }
+});
+
+</script>
+
+</body>
+</html>

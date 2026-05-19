@@ -8,9 +8,7 @@
   <script src="https://unpkg.com/html5-qrcode"></script>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -63,7 +61,8 @@
 
     .scan-frame {
       position: absolute;
-      inset: 50%;
+      left: 50%;
+      top: 50%;
       width: 230px;
       height: 230px;
       transform: translate(-50%, -50%);
@@ -157,6 +156,7 @@
     }
   </style>
 </head>
+
 <body>
 
 <div class="app">
@@ -164,7 +164,7 @@
   <h1>Scanner Accessi</h1>
   <div class="subtitle">Inquadra il QR code del biglietto</div>
 
-  <audio id="scanSound" src="beep.mp3" preload="auto"></audio>
+  <audio id="scanSound" src="beep.mp3" preload="auto" playsinline></audio>
 
   <div class="scanner-card">
     <button onclick="startScanner()">Avvia fotocamera</button>
@@ -203,9 +203,31 @@ const validPasses = [
 let html5QrCode;
 let lastScannedCode = "";
 let lastScanTime = 0;
+let audioUnlocked = false;
+
+function unlockAudio() {
+  const sound = document.getElementById("scanSound");
+
+  sound.volume = 1;
+
+  sound.play()
+    .then(() => {
+      sound.pause();
+      sound.currentTime = 0;
+      audioUnlocked = true;
+    })
+    .catch(() => {
+      audioUnlocked = false;
+    });
+}
 
 function playSound() {
   const sound = document.getElementById("scanSound");
+
+  if (!audioUnlocked) {
+    return;
+  }
+
   sound.currentTime = 0;
   sound.play().catch(() => {});
 }
@@ -250,9 +272,12 @@ function onScanSuccess(decodedText) {
 function startScanner() {
   const resultDiv = document.getElementById("result");
 
+  unlockAudio();
+
   resultDiv.innerHTML = `<div class="info">Avvio fotocamera...</div>`;
 
   if (html5QrCode) {
+    resultDiv.innerHTML = `<div class="info">Fotocamera già attiva. Inquadra il QR code.</div>`;
     return;
   }
 

@@ -209,17 +209,19 @@ let audioUnlocked = false;
 function unlockAudio() {
   const sound = document.getElementById("scanSound");
 
-  sound.volume = 1;
+  sound.muted = true;
 
   sound.play()
     .then(() => {
       sound.pause();
       sound.currentTime = 0;
+      sound.muted = false;
       audioUnlocked = true;
     })
     .catch(() => {
       audioUnlocked = false;
     });
+
 }
 
 function playSound() {
